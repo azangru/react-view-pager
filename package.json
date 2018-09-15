@@ -1,0 +1,20 @@
+{
+  "name": "react-view-pager",
+  "version": "1.0.0",
+  "description": "An attempt to port Travis Arnold’s `react-view-pager` to use `react-spring`.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azangru/react-view-pager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/azangru/react-view-pager/issues"
+  },
+  "homepage": "https://github.com/azangru/react-view-pager#readme"
+}
