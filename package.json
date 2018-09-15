@@ -4,7 +4,7 @@
   "description": "An attempt to port Travis Arnold’s `react-view-pager` to use `react-spring`.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "storybook": "start-storybook -p 9001 -c ./"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,18 @@
   "bugs": {
     "url": "https://github.com/azangru/react-view-pager/issues"
   },
-  "homepage": "https://github.com/azangru/react-view-pager#readme"
+  "homepage": "https://github.com/azangru/react-view-pager#readme",
+  "devDependencies": {
+    "@babel/cli": "7.0.0",
+    "@babel/core": "7.0.1",
+    "@storybook/react": "4.0.0-alpha.21",
+    "babel-loader": "8.0.2",
+    "webpack": "4.19.0",
+    "webpack-cli": "3.1.0"
+  },
+  "dependencies": {
+    "react": "16.5.1",
+    "react-dom": "16.5.1",
+    "react-spring": "5.7.2"
+  }
 }
