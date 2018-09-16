@@ -1,1 +1,1 @@
-An attempt to port Travis Arnold’s `react-view-pager` to use `react-spring`.
+An ongoing experiment: an attempt to understand Travis Arnold’s `react-view-pager` and, while doing so, to update it to the latest React API, to simplify it, and to port it from using `react-motion` to using `react-spring`.
