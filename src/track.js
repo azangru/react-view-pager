@@ -114,10 +114,12 @@ class TrackScroller extends Component {
   }
 
   renderViews() {
-    // FIXME
-    // we need Children map in order for the infinite option to work
-    // not actually sure why this is the case
-    return Children.map(this.props.children, child => child);
+    // inject trackPosition as an extra prop into children to make them check whether
+    // they need to re-render
+    return Children.map(
+      this.props.children,
+      child => React.cloneElement(child, { trackPosition: this.props.trackPosition })
+    );
   }
 }
 
@@ -230,7 +232,6 @@ class Track extends Component {
 
       // set instant flag so we can prime track for next move
       this.setValueInstantly(true, true);
-      this.props.pager.hydrate();
     }
 
     this.props.onRest();
