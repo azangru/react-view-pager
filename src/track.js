@@ -230,6 +230,7 @@ class Track extends Component {
 
       // set instant flag so we can prime track for next move
       this.setValueInstantly(true, true);
+      this.props.pager.hydrate();
     }
 
     this.props.onRest();
