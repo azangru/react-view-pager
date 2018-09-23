@@ -7,7 +7,7 @@ import noop from 'lodash/noop';
 
 import { ViewPagerContext } from './view-pager';
 
-import Pager from './Pager';
+import Pager from './pager';
 import getIndex from './get-index';
 
 const checkedProps = {
@@ -74,7 +74,28 @@ class TrackScroller extends Component {
   }
 
   render() {
-    const { tag, trackPosition, pager, children, ...restProps } = this.props;
+    const {
+      tag,
+      trackPosition,
+      pager,
+      viewsToShow,
+      currentView,
+      viewsToMove,
+      contain,
+      infinite,
+      instant,
+      swipe,
+      swipeThreshold,
+      flickTimeout,
+      onSwipeStart,
+      onSwipeEnd,
+      onSwipeMove,
+      onViewChange,
+      onRest,
+      children,
+      ...restProps
+    } = this.props;
+
     let style = {
       ...restProps.style
     };
@@ -116,7 +137,7 @@ class Track extends Component {
     swipe: true,
     swipeThreshold: 0.5,
     flickTimeout: 300,
-    springConfig: presets.noWobble,
+    // springConfig: presets.noWobble,
     onSwipeStart: noop,
     onSwipeMove: noop,
     onSwipeEnd: noop,
@@ -200,9 +221,9 @@ class Track extends Component {
 
   getTrackStyle() {
     let { trackPosition } = this.props.pager;
-    if (!this.state.instant) {
-      trackPosition = spring(trackPosition, this.props.springConfig);
-    }
+    // if (!this.state.instant) {
+    //   trackPosition = spring(trackPosition, this.props.springConfig);
+    // }
     return { trackPosition };
   }
 
@@ -220,28 +241,44 @@ class Track extends Component {
 
   render() {
     return (
-      <Motion
-        style={this.getTrackStyle()}
+      <Spring
+        to={this.getTrackStyle()}
         onRest={this.handleOnRest}
-        >
+        immediate={this.state.instant}
+      >
         { ({ trackPosition }) =>
           createElement(TrackScroller, {
             ...this.props,
             trackPosition
           })
         }
-      </Motion>
+      </Spring>
     );
   }
 }
 
-export default (props) => (
-  <ViewPagerContext.Consumer>
-    {
-      ({ pager }) => <Track {...props} pager={pager} />
-    }
-  </ViewPagerContext.Consumer>
-);
+
+export default class TrackWithContext extends Component {
+
+  prev() {
+    this.track.prev();
+  }
+
+  next() {
+    this.track.next();
+  }
+
+  render() {
+    return (
+      <ViewPagerContext.Consumer>
+        {
+          ({ pager }) => <Track {...this.props} pager={pager} ref={element => this.track = element}/>
+        }
+      </ViewPagerContext.Consumer>
+    );
+  }
+
+}
 
 
 

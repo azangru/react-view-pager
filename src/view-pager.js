@@ -36,7 +36,7 @@ class ViewPager extends Component {
 
   render() {
     return (
-      <ViewPagerContext.Provider>
+      <ViewPagerContext.Provider value={{ pager }}>
         { this.renderViewPager() }
       </ViewPagerContext.Provider>
     );
@@ -44,8 +44,7 @@ class ViewPager extends Component {
 
   renderViewPager() {
     const { tag, ...restProps } = this.props;
-    const props = { ...restProps, pager: this.pager };
-    return createElement(tag, props);
+    return createElement(tag, restProps);
   }
 }
 

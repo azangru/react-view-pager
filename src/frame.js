@@ -1,12 +1,13 @@
 import React, { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
 import { findDOMNode } from 'react-dom';
-import { Motion, spring, presets } from 'react-motion';
+import { Spring } from 'react-spring';
+// import { Motion, spring, presets } from 'react-motion';
 
 import { ViewPagerContext } from './view-pager';
 
-import Pager from './Pager';
-import Swipe from './Swipe';
+import Pager from './pager';
+import Swipe from './swipe';
 
 const checkedProps = {
   tag: PropTypes.string,
@@ -22,7 +23,7 @@ class Frame extends Component {
   static defaultProps = {
     tag: 'div',
     autoSize: false,
-    springConfig: presets.noWobble
+    // springConfig: presets.noWobble
   }
 
   state = {
@@ -74,11 +75,10 @@ class Frame extends Component {
   }
 
   getFrameStyle() {
-    const { springConfig } = this.props;
-    const { width, height, instant } = this.state;
+    const { width, height } = this.state;
     return {
-      maxWidth: instant ? width : spring(width, springConfig),
-      height: instant ? height : spring(height, springConfig)
+      maxWidth: width,
+      height
     };
   }
 
@@ -91,7 +91,7 @@ class Frame extends Component {
 
     if (autoSize) {
       return (
-        <Motion style={this._getFrameStyle()}>
+        <Spring to={this.getFrameStyle()}>
           { dimensions => {
             if ((autoSize === true || autoSize === 'width') && dimensions.maxWidth) {
               style.maxWidth = dimensions.maxWidth;
@@ -101,7 +101,7 @@ class Frame extends Component {
             }
             return this.renderFrame(style);
           }}
-        </Motion>
+        </Spring>
       );
     } else {
       return this.renderFrame(style);
@@ -128,7 +128,9 @@ class Frame extends Component {
 export default (props) => (
   <ViewPagerContext.Consumer>
     {
-      ({ pager }) => <Frame {...props} pager={pager} />
+      ({ pager }) => {
+        return <Frame {...props} pager={pager} />;
+      }
     }
   </ViewPagerContext.Consumer>
 );

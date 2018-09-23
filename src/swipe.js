@@ -21,6 +21,8 @@ class Swipe {
   }
 
   onSwipeStart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const { pageX, pageY } = getTouchEvent(e);
 
     // we're now swiping

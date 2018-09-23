@@ -4,7 +4,7 @@ import { findDOMNode } from 'react-dom';
 
 import { ViewPagerContext } from './view-pager';
 
-import Pager from './Pager';
+import Pager from './pager';
 
 class View extends Component {
 

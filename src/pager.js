@@ -80,6 +80,8 @@ class View extends PagerElement {
       style.position = 'relative';
       style[(axis === 'y') ? 'top' : 'left'] = this.getPosition();
     }
+
+    return style;
   }
 }
 
