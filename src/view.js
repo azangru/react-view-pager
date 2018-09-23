@@ -1,37 +1,63 @@
-import { Component, createElement } from 'react';
+import React, { Component, createElement } from 'react';
+import PropTypes from 'prop-types';
+import { findDOMNode } from 'react-dom';
+
+import { ViewPagerContext } from './view-pager';
+
+import Pager from './Pager';
 
 class View extends Component {
+
+  static propTypes = {
+    tag: PropTypes.any,
+    pager: PropTypes.instanceOf(Pager)
+  }
 
   static defaultProps = {
     tag: 'div'
   }
 
-  isViewAdded = false
+  viewAdded = false
   viewInstance = null
 
-  // componentDidMount() {
-  //   this.viewInstance = this.context.pager.addView(findDOMNode(this))
-  //   this._viewAdded = true
-  //   this.forceUpdate()
-  // }
-  //
-  // componentWillUnmount() {
-  //   this.context.pager.removeView(this._viewInstance)
-  // }
+  componentDidMount() {
+    this.viewInstance = this.props.pager.addView(findDOMNode(this)); // FIXME use refs?
+    this.viewAdded = true;
+    this.forceUpdate();
+  }
+
+  componentWillUnmount() {
+    this.props.pager.removeView(this.viewInstance);
+  }
 
   render() {
-    const { tag, ...restProps } = this.props;
-    let style = this.props.style || {};
+    const { pager, tag, trackSize, ...restProps } = this.props;
+    let style = {
+      ...restProps.style
+    };
 
     // hide view visually until it has been added to the pager
     // this should help avoid FOUC
-    if (!this.isViewAdded) {
-      // style.visibility = 'hidden';
+    if (!this.viewAdded) {
+      style.visibility = 'hidden';
       style.pointerEvents = 'none';
     }
 
-    return createElement(tag, { style, ...restProps });
+    if (this.viewInstance) {
+      style = {
+        ...style,
+        ...this.viewInstance.getStyles()
+      };
+    }
+
+    return createElement(tag, { ...restProps, style });
   }
 }
 
-export default View;
+export default (props) => (
+  <ViewPagerContext.Consumer>
+    {
+      ({ pager }) => <View {...props} pager={pager} />
+    }
+  </ViewPagerContext.Consumer>
+);
