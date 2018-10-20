@@ -137,7 +137,7 @@ class Pager {
 
     // fire a viewChange event with the new indicies if viewsToShow has changed
     if (lastOptions.viewsToShow !== this.options.viewsToShow) {
-      this.emit('viewChange', this.getCurrentIndicies());
+      this.emit('viewChange', this.getCurrentIndices());
     }
   }
 
@@ -245,7 +245,7 @@ class Pager {
     this.setPositionValue();
 
     if (!suppressEvent) {
-      this.emit('viewChange', this.getCurrentIndicies());
+      this.emit('viewChange', this.getCurrentIndices());
     }
   }
 
@@ -320,7 +320,7 @@ class Pager {
     };
   }
 
-  getCurrentIndicies() {
+  getCurrentIndices() {
     const { infinite, contain } = this.options;
     const currentViews = [];
     const viewsToShow = isNaN(this.options.viewsToShow) ? 1 : this.options.viewsToShow;
@@ -354,7 +354,7 @@ class Pager {
 
     if (this.views.length) {
       if (autoSize) {
-        const currentViews = this.getCurrentIndicies();
+        const currentViews = this.getCurrentIndices();
         dimensions = this.getMaxDimensions(currentViews);
       } else if (this.frame) {
         dimensions = {

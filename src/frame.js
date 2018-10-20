@@ -2,7 +2,6 @@ import React, { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
 import { findDOMNode } from 'react-dom';
 import { Spring } from 'react-spring';
-// import { Motion, spring, presets } from 'react-motion';
 
 import { ViewPagerContext } from './view-pager';
 

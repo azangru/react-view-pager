@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { findDOMNode } from 'react-dom';
 import { Spring } from 'react-spring';
 import noop from 'lodash/noop';
-// import { Motion, spring, presets } from 'react-motion'
 
 import { ViewPagerContext } from './view-pager';
 
