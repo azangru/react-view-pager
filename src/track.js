@@ -58,10 +58,6 @@ class TrackScroller extends Component {
   componentDidUpdate(prevProps) {
     const { pager, trackPosition } = this.props;
 
-    // update view styles with current position tween
-    // this method can get called hundreds of times, let's make sure to optimize as much as we can
-    pager.setViewStyles(trackPosition);
-
     // update onScroll callback, we use requestAnimationFrame to avoid bouncing
     // back from updates from onScroll while React Motion is trying to update its own tree
     // https://github.com/chenglou/react-motion/issues/357#issuecomment-262393424
@@ -105,6 +101,13 @@ class TrackScroller extends Component {
         ...pager.track.getStyles(trackPosition)
       };
     }
+
+    // update view styles with current position tween
+    // this method can get called hundreds of times, let's make sure to optimize as much as we can
+    // NOTE: this method needs to be called before the views are rendered, so that they always
+    // get the updated styles (otherwise the last update may be missed, which will be visible
+    // as a flicker in an infinite scroller)
+    pager.setViewStyles(trackPosition);
 
     return createElement(tag, {
       ...restProps,
