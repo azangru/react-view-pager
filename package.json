@@ -4,7 +4,9 @@
   "description": "An attempt to port Travis Arnold’s `react-view-pager` to use `react-spring`.",
   "main": "index.js",
   "scripts": {
-    "storybook": "start-storybook -p 9001 -c ./"
+    "storybook": "start-storybook -p 9001 -c ./",
+    "build-storybook": "build-storybook -c ./ -o storybook-build",
+    "deploy-storybook": "gh-pages -d storybook-build"
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,7 @@
     "babel-loader": "8.0.4",
     "eslint": "5.7.0",
     "eslint-plugin-react": "7.11.1",
+    "gh-pages": "2.0.1",
     "prop-types": "15.6.2",
     "webpack": "4.22.0",
     "webpack-cli": "3.1.2"
