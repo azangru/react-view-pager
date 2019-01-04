@@ -1,13 +1,14 @@
 {
-  "name": "react-view-pager",
-  "version": "0.0.1",
+  "name": "@azangru/react-view-pager",
+  "version": "0.0.2",
   "description": "A view-pager based on React and React-Spring",
   "main": "dist/react-view-pager.js",
   "scripts": {
     "storybook": "start-storybook -p 9001 -c ./",
     "build-storybook": "build-storybook -c ./ -o storybook-build",
     "deploy-storybook": "gh-pages -d storybook-build",
-    "build": "rm -rf ./dist && NODE_ENV=production webpack --env.mode production --config ./webpack/webpack.config.production.js"
+    "build": "rm -rf ./dist && NODE_ENV=production webpack --env.mode production --config ./webpack/webpack.config.production.js",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
