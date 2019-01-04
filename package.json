@@ -1,12 +1,13 @@
 {
   "name": "react-view-pager",
-  "version": "1.0.0",
-  "description": "An attempt to port Travis Arnold’s `react-view-pager` to use `react-spring`.",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "A view-pager based on React and React-Spring",
+  "main": "dist/react-view-pager.js",
   "scripts": {
     "storybook": "start-storybook -p 9001 -c ./",
     "build-storybook": "build-storybook -c ./ -o storybook-build",
-    "deploy-storybook": "gh-pages -d storybook-build"
+    "deploy-storybook": "gh-pages -d storybook-build",
+    "build": "rm -rf ./dist && NODE_ENV=production webpack --env.mode production --config ./webpack/webpack.config.production.js"
   },
   "repository": {
     "type": "git",
@@ -33,16 +34,21 @@
     "eslint": "5.11.1",
     "eslint-plugin-react": "7.12.2",
     "gh-pages": "2.0.1",
+    "lodash": "^4.17.11",
     "prop-types": "15.6.2",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-spring": "^7.2.7",
     "webpack": "4.28.3",
     "webpack-cli": "3.2.0"
   },
   "dependencies": {
-    "emotion": "10.0.5",
-    "lodash": "4.17.11",
-    "mitt": "1.1.3",
-    "react": "16.7.0",
-    "react-dom": "16.7.0",
-    "react-spring": "7.2.7"
+    "mitt": "1.1.3"
+  },
+  "peerDependencies": {
+    "lodash": "^4.17.11",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-spring": "^7.2.7"
   }
 }
