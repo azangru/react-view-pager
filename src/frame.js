@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { findDOMNode } from 'react-dom';
 import { Spring } from 'react-spring';
 
-import { ViewPagerContext } from './view-pager';
+import ViewPagerContext from './context';
 
 import Pager from './pager';
 import Swipe from './swipe';

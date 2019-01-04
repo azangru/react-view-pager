@@ -4,7 +4,7 @@ import { findDOMNode } from 'react-dom';
 import isEqual from 'lodash/isEqual';
 import pickBy from 'lodash/pickBy';
 
-import { ViewPagerContext } from './view-pager';
+import ViewPagerContext from './context';
 
 import Pager from './pager';
 

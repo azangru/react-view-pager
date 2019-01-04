@@ -1,11 +1,10 @@
 import React, { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
+
+import ViewPagerContext from './context';
 import Pager from './pager';
 
 const pager = new Pager();
-const ViewPagerContext = React.createContext({
-  pager
-});
 
 class ViewPager extends Component {
 
