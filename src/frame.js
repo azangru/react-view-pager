@@ -1,6 +1,5 @@
 import React, { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
-import { findDOMNode } from 'react-dom';
 import { Spring } from 'react-spring';
 
 import ViewPagerContext from './context';
@@ -43,7 +42,7 @@ class Frame extends Component {
   componentDidMount() {
     const { pager } = this.props;
 
-    pager.addFrame(findDOMNode(this)); // FIXME: use refs?
+    pager.addFrame(this.element);
 
     // set frame size initially and then based on certain pager events
     this.setFrameSize();
@@ -119,7 +118,8 @@ class Frame extends Component {
       style: {
         ...style,
         ...props.style
-      }
+      },
+      ref: (element) => this.element = element
     });
   }
 }

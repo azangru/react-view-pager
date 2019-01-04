@@ -276,7 +276,6 @@ class Pager {
     const trackSize = this.getTrackSize();
     const wrappedTrackPosition = modulo(trackPosition, -trackSize);
 
-    // FIXME: wtf is going on here with reduce that does not return anything?
     this.views.reduce((lastPosition, view) => {
       const viewSize = view.getSize();
       const nextPosition = lastPosition + viewSize;

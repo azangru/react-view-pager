@@ -1,6 +1,5 @@
 import React, { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
-import { findDOMNode } from 'react-dom';
 import isEqual from 'lodash/isEqual';
 import pickBy from 'lodash/pickBy';
 
@@ -34,7 +33,7 @@ class View extends Component {
   }
 
   componentDidMount() {
-    this.viewInstance = this.props.pager.addView(findDOMNode(this)); // FIXME use refs?
+    this.viewInstance = this.props.pager.addView(this.element);
     this.viewAdded = true;
     this.setStyles();
     this.forceUpdate();
@@ -70,7 +69,13 @@ class View extends Component {
       style.pointerEvents = 'none';
     }
 
-    return createElement(tag, { ...restProps, style });
+    return createElement(
+      tag, {
+        ...restProps,
+        style,
+        ref: (element) => this.element = element
+      }
+    );
   }
 }
 
