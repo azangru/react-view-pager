@@ -268,6 +268,10 @@ export default class TrackWithContext extends Component {
     this.track.next();
   }
 
+  scrollTo(index) {
+    this.track.scrollTo(index);
+  }
+
   render() {
     return (
       <ViewPagerContext.Consumer>
