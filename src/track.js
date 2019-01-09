@@ -2,7 +2,8 @@ import React, { Component, Children, createElement } from 'react';
 import PropTypes from 'prop-types';
 import { findDOMNode } from 'react-dom';
 import { Spring } from 'react-spring';
-import noop from 'lodash/noop';
+
+import { noop } from './utils';
 
 import ViewPagerContext from './context';
 

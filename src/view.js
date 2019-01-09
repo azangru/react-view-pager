@@ -1,7 +1,7 @@
 import React, { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
-import isEqual from 'lodash/isEqual';
-import pickBy from 'lodash/pickBy';
+
+import { pickBy, isEqualObject } from './utils';
 
 import ViewPagerContext from './context';
 
@@ -28,8 +28,12 @@ class View extends Component {
 
   shouldComponentUpdate(nextProps) {
     nextProps = withoutTrackPosition(nextProps);
+    console.log('nextProps', nextProps)
     const currentProps = withoutTrackPosition(this.props);
-    return !isEqual(nextProps, currentProps) || !isEqual(this.getStyles(), this.styles);
+    if (!isEqualObject(nextProps, currentProps) || !isEqualObject(this.getStyles(), this.styles)) {
+      console.log(!isEqualObject(nextProps, currentProps), !isEqualObject(this.getStyles(), this.styles));
+    }
+    return !isEqualObject(nextProps, currentProps) || !isEqualObject(this.getStyles(), this.styles);
   }
 
   componentDidMount() {
