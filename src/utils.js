@@ -24,15 +24,15 @@ export function pickBy(object, predicate) {
   return Object.keys(object).reduce((result, key) => {
     const value = object[key];
     if (predicate(value, key)) {
-      return {
-        ...result,
-        [key]: value
-      };
+      result[key] = value;
     }
+    return result;
   }, {});
 }
 
-export function isEqualObject(obj1, obj2) {
+export function areEqualObjects(obj1, obj2) {
+  if (Object.keys(obj1).length !== Object.keys(obj2).length) return false;
+
   return Object.keys(obj1).map(key => {
     const value1 = obj1[key];
     const value2 = obj2[key];
@@ -43,7 +43,7 @@ export function isEqualObject(obj1, obj2) {
     } else if (Array.isArray(value1) && Array.isArray(value2)) {
       return value1.map((val, index) => val === value2[index]).every(Boolean);
     } else {
-      return isEqualObject(value1, value2);
+      return areEqualObjects(value1, value2);
     }
   }).every(Boolean);
 }
