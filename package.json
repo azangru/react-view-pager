@@ -2,13 +2,14 @@
   "name": "@azangru/react-view-pager",
   "version": "0.0.4",
   "description": "A view-pager based on React and React-Spring",
-  "main": "dist/react-view-pager.js",
+  "main": "dist/react-view-pager.cjs.js",
+  "module": "dist/react-view-pager.esm.js",
   "scripts": {
     "storybook": "start-storybook -p 9001 -c ./",
     "build-storybook": "build-storybook -c ./ -o storybook-build",
     "predeploy-storybook": "npm run build-storybook",
     "deploy-storybook": "gh-pages -d storybook-build",
-    "build": "rm -rf ./dist && NODE_ENV=production webpack --env.mode production --config ./webpack/webpack.config.production.js",
+    "build": "rm -rf ./dist && NODE_ENV=production rollup -c",
     "prepublish": "npm run build"
   },
   "repository": {
@@ -40,8 +41,10 @@
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-spring": "^7.2.7",
-    "webpack": "4.28.3",
-    "webpack-cli": "3.2.0"
+    "rollup": "1.1.1",
+    "rollup-plugin-babel": "4.3.2",
+    "rollup-plugin-commonjs": "9.2.0",
+    "rollup-plugin-node-resolve": "4.0.0"
   },
   "dependencies": {
     "mitt": "1.1.3"
