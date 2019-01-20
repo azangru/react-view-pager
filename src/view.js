@@ -1,14 +1,14 @@
 import React, { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
-import isEqual from 'lodash/isEqual';
-import pickBy from 'lodash/pickBy';
+
+import { pickBy, areEqualObjects } from './utils';
 
 import ViewPagerContext from './context';
 
 import Pager from './pager';
 
-function withoutTrackPosition(props) {
-  return pickBy(props, (value, key) => key !== 'trackPosition');
+function pickComparableProps(props) {
+  return pickBy(props, (value, key) => !['children', 'pager'].includes(key));
 }
 
 class View extends Component {
@@ -27,9 +27,9 @@ class View extends Component {
   styles = {}
 
   shouldComponentUpdate(nextProps) {
-    nextProps = withoutTrackPosition(nextProps);
-    const currentProps = withoutTrackPosition(this.props);
-    return !isEqual(nextProps, currentProps) || !isEqual(this.getStyles(), this.styles);
+    nextProps = pickComparableProps(nextProps);
+    const currentProps = pickComparableProps(this.props);
+    return !areEqualObjects(nextProps, currentProps) || !areEqualObjects(this.getStyles(), this.styles);
   }
 
   componentDidMount() {
@@ -56,7 +56,7 @@ class View extends Component {
   }
 
   render() {
-    const { pager, tag, trackSize, ...restProps } = this.props;
+    const { tag, pager, ...restProps } = this.props;
     let style = {
       ...restProps.style,
       ...this.getStyles()

@@ -9,7 +9,7 @@ storiesOf('Single slide per view', module)
     const imageStyle = { width: '100%', userSelect: 'none' };
     const imageSlides = ['mercy-wallpaper', 'old-tree-wallpaper', 'panda-wallpaper']
       .map(imageName => ({ imageName, imageStyle }))
-      .map(imageProps => (<ImageSlide {...imageProps} key={imageProps.name} />));
+      .map(imageProps => (<ImageSlide {...imageProps} key={imageProps.imageName} />));
 
     return (
       <Carousel>

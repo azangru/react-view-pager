@@ -18,12 +18,6 @@ const externals = {
     commonjs2: 'react-spring',
     commonjs: 'react-spring',
     amd: 'ReactSpring'
-  },
-  'lodash': {
-    commonjs: 'lodash',
-    commonjs2: 'lodash2',
-    amd: 'lodash',
-    root: '_'
   }
 };
 

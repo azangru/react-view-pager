@@ -107,10 +107,10 @@ class Frame extends Component {
   }
 
   renderFrame(style) {
-    const { tag } = this.props;
+    const { tag, autoSize, ...restProps } = this.props;
     const props = {
       ...this.swipe.getEvents(),
-      ...this.props
+      ...restProps
     };
 
     return createElement(tag, {
