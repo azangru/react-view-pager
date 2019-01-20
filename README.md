@@ -31,4 +31,4 @@ import { ViewPager, Frame, Track, View } from '@azangru/react-view-pager';
 </ViewPager>
 ```
 
-_(see [code example](stories/components/carousel))_
+_(see [code example](stories/components/carousel.js))_
