@@ -46,8 +46,8 @@ const isNotEqual = (current, next) => (
   current.flickTimeout !== next.flickTimeout
 );
 
-// Track scroller is an intermediate component that allows us to provide the
-// React Motion value to onScroll and lets any user of onScroll use setState
+// Track scroller is an intermediate component that allows us to provide
+// React Spring with a value to onScroll and lets any user of onScroll use setState
 class TrackScroller extends Component {
   static propTypes = checkedProps
 
@@ -117,11 +117,11 @@ class TrackScroller extends Component {
   }
 
   renderViews() {
-    // inject trackPosition as an extra prop into children to make them check whether
-    // they need to re-render
+    // it's a bit crazy, but without the Children.map (that does nothing!) infinite carousel will
+    // contain empty slides
     return Children.map(
       this.props.children,
-      child => React.cloneElement(child, { trackPosition: this.props.trackPosition })
+      child => React.cloneElement(child)
     );
   }
 }

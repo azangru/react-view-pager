@@ -19,7 +19,7 @@
     "eqeqeq": 1,
     "no-console": 0,
     "object-curly-spacing": [1, "always"],
-    "no-unused-vars": ["error", { "vars": "all", "args": "after-used" }],
+    "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": true }],
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error"
   },

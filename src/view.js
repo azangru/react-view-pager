@@ -7,8 +7,8 @@ import ViewPagerContext from './context';
 
 import Pager from './pager';
 
-function withoutIrrelevantProps(props) {
-  return pickBy(props, (value, key) => !['trackPosition', 'children', 'pager'].includes(key));
+function pickComparableProps(props) {
+  return pickBy(props, (value, key) => !['children', 'pager'].includes(key));
 }
 
 class View extends Component {
@@ -27,8 +27,8 @@ class View extends Component {
   styles = {}
 
   shouldComponentUpdate(nextProps) {
-    nextProps = withoutIrrelevantProps(nextProps);
-    const currentProps = withoutIrrelevantProps(this.props);
+    nextProps = pickComparableProps(nextProps);
+    const currentProps = pickComparableProps(this.props);
     return !areEqualObjects(nextProps, currentProps) || !areEqualObjects(this.getStyles(), this.styles);
   }
 
@@ -56,7 +56,7 @@ class View extends Component {
   }
 
   render() {
-    const { pager, tag, trackSize, ...restProps } = this.props;
+    const { tag, pager, ...restProps } = this.props;
     let style = {
       ...restProps.style,
       ...this.getStyles()
