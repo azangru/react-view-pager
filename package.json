@@ -6,6 +6,7 @@
   "scripts": {
     "storybook": "start-storybook -p 9001 -c ./",
     "build-storybook": "build-storybook -c ./ -o storybook-build",
+    "predeploy-storybook": "npm run build-storybook",
     "deploy-storybook": "gh-pages -d storybook-build",
     "build": "rm -rf ./dist && NODE_ENV=production webpack --env.mode production --config ./webpack/webpack.config.production.js",
     "prepublish": "npm run build"
