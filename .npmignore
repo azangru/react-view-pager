@@ -1,9 +1,11 @@
 .git
 .babelrc
+.eslint
 .gitignore
 node_modules
 storybook-build
 src
 stories
-webpack
 config.js
+rollup.config.js
+README.md

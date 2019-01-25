@@ -1,6 +1,6 @@
 {
   "name": "@azangru/react-view-pager",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A view-pager based on React and React-Spring",
   "main": "dist/react-view-pager.cjs.js",
   "module": "dist/react-view-pager.esm.js",
