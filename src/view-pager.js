@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import ViewPagerContext from './context';
 import Pager from './pager';
 
-const pager = new Pager();
-
 class ViewPager extends Component {
 
   static propTypes = {
@@ -19,23 +17,24 @@ class ViewPager extends Component {
   constructor(props) {
     super(props);
 
+    this.pager = new Pager();
     const forceUpdate = () => this.forceUpdate();
 
     // re-render the whole tree to update components on certain events
-    pager.on('viewChange', forceUpdate);
-    pager.on('hydrated', forceUpdate);
+    this.pager.on('viewChange', forceUpdate);
+    this.pager.on('hydrated', forceUpdate);
   }
 
   componentDidMount() {
     // run a hydration on the next animation frame to obtain proper targets and positioning
     requestAnimationFrame(() => {
-      pager.hydrate();
+      this.pager.hydrate();
     });
   }
 
   render() {
     return (
-      <ViewPagerContext.Provider value={{ pager }}>
+      <ViewPagerContext.Provider value={{ pager: this.pager }}>
         { this.renderViewPager() }
       </ViewPagerContext.Provider>
     );
