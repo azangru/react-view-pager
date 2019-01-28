@@ -1,6 +1,6 @@
 {
   "name": "@azangru/react-view-pager",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A view-pager based on React and React-Spring",
   "main": "dist/react-view-pager.cjs.js",
   "module": "dist/react-view-pager.esm.js",
@@ -47,7 +47,8 @@
     "rollup-plugin-node-resolve": "4.0.0"
   },
   "dependencies": {
-    "mitt": "1.1.3"
+    "mitt": "1.1.3",
+    "resize-observer-polyfill": "1.5.1"
   },
   "peerDependencies": {
     "react": "^16.7.0",

@@ -1,4 +1,6 @@
 import mitt from 'mitt';
+import ResizeObserver from 'resize-observer-polyfill';
+
 import PagerElement from './pager-element';
 import { modulo, clamp, sum, max } from './utils';
 
