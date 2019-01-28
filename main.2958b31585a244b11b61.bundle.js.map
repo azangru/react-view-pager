@@ -1,0 +1,1 @@
+{"version":3,"file":"main.2958b31585a244b11b61.bundle.js","sources":["webpack:///./stories/components/image-slide.js"],"sourcesContent":["import React from 'react';\n\nfunction ImageSlide({ imageName, imageStyle }) {\n  return (\n    <img src={require(`../assets/${imageName}.jpg`)} style={imageStyle} />\n  );\n}\n\nexport default ImageSlide;\n"],"mappings":"AAAA","sourceRoot":""}
