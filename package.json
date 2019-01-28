@@ -1,6 +1,6 @@
 {
   "name": "@azangru/react-view-pager",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A view-pager based on React and React-Spring",
   "main": "dist/react-view-pager.cjs.js",
   "module": "dist/react-view-pager.esm.js",
@@ -34,6 +34,7 @@
     "@storybook/react": "4.1.4",
     "babel-eslint": "10.0.1",
     "babel-loader": "8.0.4",
+    "babel-plugin-array-includes": "2.0.3",
     "eslint": "5.11.1",
     "eslint-plugin-react": "7.12.2",
     "gh-pages": "2.0.1",
