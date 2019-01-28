@@ -107,7 +107,7 @@ class Frame extends Component {
   }
 
   renderFrame(style) {
-    const { tag, autoSize, ...restProps } = this.props;
+    const { tag, autoSize, pager, springConfig, ...restProps } = this.props;
     const props = {
       ...this.swipe.getEvents(),
       ...restProps
