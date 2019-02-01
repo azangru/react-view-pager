@@ -1,5 +1,5 @@
 import React from 'react';
 
-const ViewPagerContext = React.createContext();
+const ViewPagerContext = React.createContext(null);
 
 export default ViewPagerContext;

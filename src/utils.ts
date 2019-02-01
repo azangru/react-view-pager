@@ -1,26 +1,26 @@
-export function modulo(val, max) {
+export function modulo(val: number, max: number) {
   return ((val % max) + max) % max;
 }
 
-export function clamp(val, min, max) {
+export function clamp(val: number, min: number, max:number) {
   return Math.min(Math.max(min, val), max);
 }
 
-export function sum(arr) {
+export function sum(arr: number[]) {
   return arr.reduce((a, b) => a + b, 0);
 }
 
-export function max(arr) {
+export function max(arr: number[]) {
   return Math.max.apply(null, arr);
 }
 
-export function range(start, end, max) {
+export function range(start: number, end: number, max: number) {
   return [...Array(1 + end - start)].map(val =>
     max ? modulo(start + val, max) : start + val
   );
 }
 
-export function pickBy(object, predicate) {
+export function pickBy(object: object, predicate: (value: any, key: string) => boolean) {
   return Object.keys(object).reduce((result, key) => {
     const value = object[key];
     if (predicate(value, key)) {
@@ -30,7 +30,7 @@ export function pickBy(object, predicate) {
   }, {});
 }
 
-export function areEqualObjects(obj1, obj2) {
+export function areEqualObjects(obj1: object, obj2: object) {
   if (Object.keys(obj1).length !== Object.keys(obj2).length) return false;
 
   return Object.keys(obj1).map(key => {
@@ -50,4 +50,4 @@ export function areEqualObjects(obj1, obj2) {
 
 export const noop = () => {};
 
-const isObject = (obj) => obj === Object(obj);
+const isObject = (obj: unknown) => obj === Object(obj);
