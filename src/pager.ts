@@ -6,8 +6,22 @@ import { modulo, clamp, sum, max } from './utils';
 
 const isWindowDefined = (typeof window !== 'undefined');
 
+type PagerOptions = {
+  viewsToShow: number,
+  viewsToMove: number,
+  align: number,
+  contain: boolean,
+  axis: string, // 'x' or 'y'; perhaps can use the 'x' | 'y' type
+  autoSize: boolean,
+  infinite: boolean,
+  instant: boolean,
+  swipe: boolean,
+  swipeThreshold: number,
+  flickTimeout: number
+};
+
 class Track extends PagerElement {
-  getStyles(trackPosition) {
+  getStyles(trackPosition: number) {
     const { x, y } = this.pager.getPositionValue(trackPosition);
     const trackSize = this.pager.getTrackSize();
     const style = {
@@ -18,9 +32,7 @@ class Track extends PagerElement {
       const { axis, viewsToShow } = this.pager.options;
       const dimension = (axis === 'x') ? 'width' : 'height';
 
-      style[dimension] = (viewsToShow === 'auto')
-        ? trackSize
-        : this.pager.views.length / viewsToShow * 100 + '%';
+      style[dimension] = this.pager.views.length / viewsToShow * 100 + '%';
     }
 
     return style;
@@ -28,6 +40,13 @@ class Track extends PagerElement {
 }
 
 class View extends PagerElement {
+  index: number
+  inBounds: boolean
+  isCurrent: boolean
+  isVisible: boolean
+  origin: number
+  target: number
+
   constructor({ index, ...restOptions }) {
     super(restOptions);
 
@@ -39,11 +58,11 @@ class View extends PagerElement {
     this.setOrigin();
   }
 
-  setCurrent(isCurrent) {
+  setCurrent(isCurrent: boolean) {
     this.isCurrent = isCurrent;
   }
 
-  setVisible(isVisible) {
+  setVisible(isVisible: boolean) {
     this.isVisible = isVisible;
   }
 
@@ -64,7 +83,7 @@ class View extends PagerElement {
 
   getStyles() {
     const { axis, viewsToShow, infinite } = this.pager.options;
-    const style = {};
+    const style: { [x: string]: any } = {};
 
     // we need to position views inline when using the x axis
     if (axis === 'x') {
@@ -102,7 +121,22 @@ const defaultOptions = {
 };
 
 class Pager {
+  on: Function
+  emit: Function
+  off: Function
+  views: View[]
+  currentIndex: number
+  currentView: View | null
+  currentTween: number
+  trackPosition: number
+  isSwiping: boolean
+  options: PagerOptions
+  resizeObserver: ResizeObserver | null
+  frame: PagerElement
+  track: Track
+
   constructor(options = {}) {
+    // @ts-ignore — mitt typings are incorrect, see https://github.com/developit/mitt/issues/78#issuecomment-422781124
     const emitter = mitt();
 
     this.on = emitter.on;
@@ -128,7 +162,7 @@ class Pager {
     }
   }
 
-  setOptions(options) {
+  setOptions(options: PagerOptions) {
     const lastOptions = this.options;
 
     // spread new options over the old ones
@@ -155,21 +189,21 @@ class Pager {
     this.emit('hydrated');
   }
 
-  addFrame(node) {
+  addFrame(node: HTMLElement) {
     this.frame = new PagerElement({
       node,
       pager: this
     });
   }
 
-  addTrack(node) {
+  addTrack(node: HTMLElement) {
     this.track = new Track({
       node,
       pager: this
     });
   }
 
-  addView(node) {
+  addView(node: HTMLElement) {
     const index = this.views.length;
     const view = new View({
       node,
@@ -189,7 +223,7 @@ class Pager {
     }
 
     // listen for width and height changes
-    if (isWindowDefined) {
+    if (isWindowDefined && this.resizeObserver) {
       this.resizeObserver.observe(node);
     }
 
@@ -199,13 +233,13 @@ class Pager {
     return view;
   }
 
-  removeView(removedView) {
+  removeView(removedView: View) {
     // filter out view
     this.views = this.views.filter(view => view !== removedView);
 
     // stop observing node
-    if (isWindowDefined) {
-      this.resizeObserver.disconnect(removedView.node);
+    if (isWindowDefined && this.resizeObserver) {
+      this.resizeObserver.unobserve(removedView.node);
     }
 
     // fire an event
@@ -264,7 +298,7 @@ class Pager {
       }
 
       if (contain) {
-        const trackEndOffset = ((viewsToShow === 'auto' && autoSize) || viewsToShow <= 1)
+        const trackEndOffset = (autoSize || viewsToShow <= 1)
           ? 0 : this.getFrameSize({ autoSize: false });
         trackPosition = clamp(trackPosition, trackEndOffset - trackSize, 0);
       }
@@ -301,16 +335,23 @@ class Pager {
   }
 
   getNumericViewsToShow() {
-    return isNaN(this.options.viewsToShow) ? 1 : this.options.viewsToShow;
+    const { viewsToShow } = this.options;
+    if (typeof viewsToShow === 'number' && isNaN(viewsToShow)) {
+      return 1;
+    } else {
+      return this.options.viewsToShow;
+    }
   }
 
-  getMaxDimensions(indices) {
+  getMaxDimensions(indices: number[]) {
     const { axis } = this.options;
-    const widths = [];
-    const heights = [];
+    const widths: number[] = [];
+    const heights: number[] = [];
 
     indices.forEach(index => {
-      const view = isNaN(index) ? index : this.getView(index);
+      if (isNaN(index)) return;
+      const view = this.getView(index);
+
       widths.push(view.getSize('width'));
       heights.push(view.getSize('height'));
     });
@@ -323,7 +364,7 @@ class Pager {
 
   getCurrentIndices() {
     const { infinite, contain } = this.options;
-    const currentViews = [];
+    const currentViews: number[] = [];
     const viewsToShow = isNaN(this.options.viewsToShow) ? 1 : this.options.viewsToShow;
     let minIndex = this.currentIndex;
     let maxIndex = this.currentIndex + (viewsToShow - 1);
@@ -347,7 +388,7 @@ class Pager {
     return currentViews;
   }
 
-  getFrameSize({ autoSize = this.options.autoSize, fullSize = false } = {}) {
+  getFrameSize({ autoSize = this.options.autoSize } = {}) {
     let dimensions = {
       width: 0,
       height: 0
@@ -365,11 +406,10 @@ class Pager {
       }
     }
 
-    if (fullSize) {
-      return dimensions;
-    } else {
-      return dimensions[this.options.axis === 'x' ? 'width' : 'height'];
-    }
+    // FIXME: previously, this function also took fullSize as a parameter,
+    // and if fullSize was true, the whole dimensions object got returned,
+    // which does not match the expected output type
+    return dimensions[this.options.axis === 'x' ? 'width' : 'height'];
   }
 
   getTrackSize(includeLastSlide = true) {
@@ -381,12 +421,12 @@ class Pager {
     return size;
   }
 
-  getView(index) {
+  getView(index: number) {
     return this.views[modulo(index, this.views.length)];
   }
 
   // where the view should start
-  getStartCoords(index) {
+  getStartCoords(index: number) {
     let target = 0;
     this.views.slice(0, index).forEach(view => {
       target -= view.getSize();
@@ -395,7 +435,7 @@ class Pager {
   }
 
   // how much to offset the view defined by the align option
-  getAlignOffset(view) {
+  getAlignOffset(view: View) {
     const frameSize = this.getFrameSize({ autoSize: false });
     const viewSize = view.getSize();
     return (frameSize - viewSize) * this.options.align;

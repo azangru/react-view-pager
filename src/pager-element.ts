@@ -1,21 +1,35 @@
+type PagerElementOptions = {
+  node: HTMLElement,
+  pager: object, // Pager instance
+  width?: number,
+  height?: number
+}
+
 class PagerElement {
-  constructor({ node, pager, width, height }) {
+  node: HTMLElement
+  pager: any // FIXME
+  x: number
+  y: number
+  width: number
+  height: number
+
+  constructor({ node, pager, width, height }: PagerElementOptions) {
     this.node = node;
     this.pager = pager;
     this.x = this.y = 0;
     this.setSize(width, height);
   }
 
-  setSize(width, height) {
+  setSize(width?: number, height?: number) {
     this.width = width || this.node.offsetWidth;
     this.height = height || this.node.offsetHeight;
   }
 
-  setPosition(position) {
+  setPosition(position: number) {
     this[this.pager.options.axis] = position;
   }
 
-  getSize(dimension) {
+  getSize(dimension?: string) {
     if (dimension === 'width' || dimension === 'height') {
       return this[dimension];
     } else {

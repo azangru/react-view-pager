@@ -35,9 +35,10 @@ class View extends Component<Props> {
   styles = {}
 
   shouldComponentUpdate(nextProps: Props) {
-    nextProps = pickComparableProps(nextProps);
-    const currentProps = pickComparableProps(this.props);
-    return !areEqualObjects(nextProps, currentProps) || !areEqualObjects(this.getStyles(), this.styles);
+    const nextPropsForComparison = pickComparableProps(nextProps);
+    const currentPropsForComparison = pickComparableProps(this.props);
+    return !areEqualObjects(nextPropsForComparison, currentPropsForComparison)
+      || !areEqualObjects(this.getStyles(), this.styles);
   }
 
   componentDidMount() {

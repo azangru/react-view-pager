@@ -5,6 +5,7 @@
   "main": "dist/react-view-pager.cjs.js",
   "module": "dist/react-view-pager.esm.js",
   "scripts": {
+    "check-types": "tsc",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "build-storybook": "build-storybook -c .storybook -o storybook-build",
     "predeploy-storybook": "npm run build-storybook",
@@ -48,7 +49,8 @@
     "rollup": "1.1.2",
     "rollup-plugin-babel": "4.3.2",
     "rollup-plugin-commonjs": "9.2.0",
-    "rollup-plugin-node-resolve": "4.0.0"
+    "rollup-plugin-node-resolve": "4.0.0",
+    "typescript": "3.3.1"
   },
   "dependencies": {
     "mitt": "1.1.3",
