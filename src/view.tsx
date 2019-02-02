@@ -1,11 +1,10 @@
 import React, { Component, createElement, createRef } from 'react';
-import PropTypes from 'prop-types';
 
 import { pickBy, areEqualObjects } from './utils';
 
 import ViewPagerContext from './context';
 
-import Pager from './pager';
+import Pager, { View as PagerView } from './pager';
 
 type Props = {
   tag: string,
@@ -20,18 +19,13 @@ function pickComparableProps(props: Props) {
 
 class View extends Component<Props> {
 
-  static propTypes = {
-    tag: PropTypes.any,
-    pager: PropTypes.instanceOf(Pager)
-  }
-
   static defaultProps = {
     tag: 'div'
   }
 
   element = createRef()
   viewAdded = false
-  viewInstance = null
+  viewInstance: PagerView | null = null
   styles = {}
 
   shouldComponentUpdate(nextProps: Props) {
@@ -42,11 +36,12 @@ class View extends Component<Props> {
   }
 
   componentDidMount() {
-    if (this.element)
-    this.viewInstance = this.props.pager.addView(this.element.current);
-    this.viewAdded = true;
-    this.setStyles();
-    this.forceUpdate();
+    if (this.element.current instanceof HTMLElement) {
+      this.viewInstance = this.props.pager.addView(this.element.current);
+      this.viewAdded = true;
+      this.setStyles();
+      this.forceUpdate();
+    }
   }
 
   componentDidUpdate() {
@@ -54,7 +49,9 @@ class View extends Component<Props> {
   }
 
   componentWillUnmount() {
-    this.props.pager.removeView(this.viewInstance);
+    if (this.viewInstance) {
+      this.props.pager.removeView(this.viewInstance);
+    }
   }
 
   setStyles() {
@@ -92,7 +89,7 @@ class View extends Component<Props> {
 export default (props: Props) => (
   <ViewPagerContext.Consumer>
     {
-      ({ pager }) => <View {...props} pager={pager} />
+      (context) => context && <View {...props} pager={context.pager} />
     }
   </ViewPagerContext.Consumer>
 );

@@ -1,20 +1,21 @@
 import React, { Component, createElement } from 'react';
-import PropTypes from 'prop-types';
 
 import ViewPagerContext from './context';
 import Pager from './pager';
 
-class ViewPager extends Component {
+type Props = {
+  tag: string
+};
 
-  static propTypes = {
-    tag: PropTypes.string
-  }
+class ViewPager extends Component<Props> {
+
+  pager: Pager
 
   static defaultProps = {
     tag: 'div'
   }
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     this.pager = new Pager();

@@ -39,7 +39,7 @@ class Track extends PagerElement {
   }
 }
 
-class View extends PagerElement {
+export class View extends PagerElement {
   index: number
   inBounds: boolean
   isCurrent: boolean

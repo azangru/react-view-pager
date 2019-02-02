@@ -1,5 +1,11 @@
 import React from 'react';
 
-const ViewPagerContext = React.createContext(null);
+import Pager from './pager';
+
+interface ContextInterface {
+  pager: Pager
+}
+
+const ViewPagerContext = React.createContext<ContextInterface | null>(null);
 
 export default ViewPagerContext;

@@ -1,7 +1,7 @@
 import { Children } from 'react';
 
-export default function getIndex(key, children) {
-  let index = null;
+export default function getIndex(key, children: JSX.Element[] | JSX.Element) {
+  let index: number | null = null;
 
   Children.forEach(children, (child, _index) => {
     if (child.key === key || _index === key) {
