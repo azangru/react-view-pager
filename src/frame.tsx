@@ -1,5 +1,4 @@
-import React, { Component, createElement } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, createElement, createRef } from 'react';
 import { Spring } from 'react-spring';
 
 import ViewPagerContext from './context';
@@ -7,16 +6,25 @@ import ViewPagerContext from './context';
 import Pager from './pager';
 import Swipe from './swipe';
 
-const checkedProps = {
-  tag: PropTypes.string,
-  autoSize: PropTypes.oneOf([true, false, 'width', 'height']),
-  springConfig: PropTypes.objectOf(PropTypes.number),
-  pager: PropTypes.instanceOf(Pager)
+type FrameProps = {
+  tag?: string,
+  autoSize?: boolean | 'width' | 'height',
+  style?: { [key: string]: unknown },
+  children: JSX.Element,
+  className?: string
+  // springConfig
 };
 
-class Frame extends Component {
+type FramePropsWithPager = {
+  tag: string,
+  autoSize: boolean | 'width' | 'height',
+  style?: { [key: string]: unknown },
+  children: JSX.Element,
+  className?: string
+  pager: Pager
+};
 
-  static propTypes = checkedProps
+class Frame extends Component<FramePropsWithPager> {
 
   static defaultProps = {
     tag: 'div',
@@ -30,10 +38,14 @@ class Frame extends Component {
     instant: true
   };
 
-  constructor(props) {
+  swipe: Swipe
+  hydrate: boolean
+  element = createRef()
+
+  constructor(props: FramePropsWithPager) {
     super(props);
 
-    const { pager, autoSize } = this.props;
+    const { pager, autoSize } = props;
     pager.setOptions({ autoSize });
     this.swipe = new Swipe(pager);
     this.hydrate = false;
@@ -42,16 +54,17 @@ class Frame extends Component {
   componentDidMount() {
     const { pager } = this.props;
 
-    pager.addFrame(this.element);
+    if (this.element.current instanceof HTMLElement) {
+      pager.addFrame(this.element.current);
+      // set frame size initially and then based on certain pager events
+      this.setFrameSize();
 
-    // set frame size initially and then based on certain pager events
-    this.setFrameSize();
-
-    pager.on('viewChange', this.setFrameSize);
-    pager.on('hydrated', this.setFrameSize);
+      pager.on('viewChange', this.setFrameSize);
+      pager.on('hydrated', this.setFrameSize);
+    }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: FramePropsWithPager) {
     // update options that have changed
     if (this.props.autoSize !== prevProps.autoSize) {
       this.props.pager.setOptions({ autoSize: this.props.autoSize });
@@ -62,7 +75,7 @@ class Frame extends Component {
   setFrameSize = () => {
     const frameSize = this.props.pager.getFrameSize({ fullSize: true });
 
-    if (frameSize.width && frameSize.height) {
+    if (typeof frameSize === 'object' && frameSize.width && frameSize.height) {
       this.setState(frameSize, () => {
         // we need to unset the instant flag now that React Motion has dimensions to animate to
         if (this.state.instant) {
@@ -82,7 +95,7 @@ class Frame extends Component {
 
   render() {
     const { autoSize } = this.props;
-    const style = {
+    const style: { [key: string]: unknown }  = {
       position: 'relative',
       overflow: 'hidden'
     };
@@ -106,8 +119,8 @@ class Frame extends Component {
     }
   }
 
-  renderFrame(style) {
-    const { tag, autoSize, pager, springConfig, ...restProps } = this.props;
+  renderFrame(style: { [key: string]: unknown }) {
+    const { tag, autoSize, pager, ...restProps } = this.props;
     const props = {
       ...this.swipe.getEvents(),
       ...restProps
@@ -119,17 +132,15 @@ class Frame extends Component {
         ...style,
         ...props.style
       },
-      ref: (element) => this.element = element
+      ref: this.element
     });
   }
 }
 
-export default (props) => (
+export default (props: FrameProps) => (
   <ViewPagerContext.Consumer>
     {
-      ({ pager }) => {
-        return <Frame {...props} pager={pager} />;
-      }
+      (context) => context && <Frame {...props} pager={context.pager} />
     }
   </ViewPagerContext.Consumer>
 );

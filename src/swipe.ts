@@ -1,10 +1,22 @@
-function getTouchEvent(e) {
-  return e.touches && e.touches[0] || e;
+import Pager from './pager';
+
+function getTouchEvent(e: MouseEvent | TouchEvent) {
+  if ((e as TouchEvent).touches) {
+    return (e as TouchEvent).touches[0];
+  } else {
+    return (e as MouseEvent);
+  }
 }
 
 class Swipe {
 
-  constructor(pager) {
+  pager: Pager
+  trackStart: number | boolean
+  swipeStart: { x: number, y: number }
+  swipeDiff: { x: number, y: number }
+  isFlick: boolean
+
+  constructor(pager: Pager) {
     this.pager = pager;
     this.trackStart = false;
     this.swipeStart = this.swipeDiff = {
@@ -13,14 +25,14 @@ class Swipe {
     };
   }
 
-  isSwipe(threshold) {
+  isSwipe(threshold: number) {
     const { x, y } = this.swipeDiff;
     return this.pager.options.axis === 'x'
       ? Math.abs(x) > Math.max(threshold, Math.abs(y))
       : Math.abs(x) < Math.max(threshold, Math.abs(y));
   }
 
-  onSwipeStart = (e) => {
+  onSwipeStart = (e: MouseEvent | TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const { pageX, pageY } = getTouchEvent(e);
@@ -50,7 +62,7 @@ class Swipe {
     this.pager.emit('swipeStart');
   }
 
-  onSwipeMove = (e) =>  {
+  onSwipeMove = (e: MouseEvent | TouchEvent) =>  {
     // bail if we aren't swiping
     if (!this.pager.isSwiping) return;
 
@@ -68,7 +80,7 @@ class Swipe {
       y: this.swipeStart.y - pageY
     };
 
-    if (this.isSwipe(swipeThreshold)) {
+    if (this.isSwipe(swipeThreshold) && typeof this.trackStart === 'number') {
       e.preventDefault();
       e.stopPropagation();
 
@@ -85,7 +97,8 @@ class Swipe {
     const { swipeThreshold, viewsToMove, axis } = this.pager.options;
     const threshold = this.isFlick
       ? swipeThreshold
-      : (this.pager.currentView.getSize() * viewsToMove) * swipeThreshold;
+      : this.pager.currentView
+        ? (this.pager.currentView.getSize() * viewsToMove) * swipeThreshold : 0;
 
     // we've stopped swiping
     this.pager.isSwiping = false;
@@ -121,7 +134,7 @@ class Swipe {
 
   getEvents() {
     const { swipe } = this.pager.options;
-    let swipeEvents = {};
+    let swipeEvents: { [key: string]: Function } = {};
 
     if (swipe === true || swipe === 'mouse') {
       swipeEvents.onMouseDown = this.onSwipeStart;

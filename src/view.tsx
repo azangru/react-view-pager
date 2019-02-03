@@ -7,17 +7,22 @@ import ViewPagerContext from './context';
 import Pager, { View as PagerView } from './pager';
 
 type Props = {
-  tag: string,
-  pager: Pager,
+  tag?: string,
   style?: object,
+  className?: string,
   children: JSX.Element
 };
+
+type ViewPropsWithPager = Props & {
+  tag: string,
+  pager: Pager
+}
 
 function pickComparableProps(props: Props) {
   return pickBy(props, (value, key: string) => !['children', 'pager'].includes(key));
 }
 
-class View extends Component<Props> {
+class View extends Component<ViewPropsWithPager> {
 
   static defaultProps = {
     tag: 'div'

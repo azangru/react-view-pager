@@ -12,10 +12,10 @@ type PagerOptions = {
   align: number,
   contain: boolean,
   axis: string, // 'x' or 'y'; perhaps can use the 'x' | 'y' type
-  autoSize: boolean,
+  autoSize: boolean | 'width' | 'height',
   infinite: boolean,
   instant: boolean,
-  swipe: boolean,
+  swipe: boolean | 'mouse' | 'touch',
   swipeThreshold: number,
   flickTimeout: number
 };
@@ -300,7 +300,9 @@ class Pager {
       if (contain) {
         const trackEndOffset = (autoSize || viewsToShow <= 1)
           ? 0 : this.getFrameSize({ autoSize: false });
-        trackPosition = clamp(trackPosition, trackEndOffset - trackSize, 0);
+        if (typeof trackEndOffset === 'number') {
+          trackPosition = clamp(trackPosition, trackEndOffset - trackSize, 0);
+        }
       }
     }
 
@@ -388,7 +390,7 @@ class Pager {
     return currentViews;
   }
 
-  getFrameSize({ autoSize = this.options.autoSize } = {}) {
+  getFrameSize({ autoSize = this.options.autoSize, fullSize = false } = {}) {
     let dimensions = {
       width: 0,
       height: 0
@@ -406,10 +408,12 @@ class Pager {
       }
     }
 
-    // FIXME: previously, this function also took fullSize as a parameter,
-    // and if fullSize was true, the whole dimensions object got returned,
-    // which does not match the expected output type
-    return dimensions[this.options.axis === 'x' ? 'width' : 'height'];
+    if (fullSize) {
+      // parameter passed when this function is called by the Frame component
+      return dimensions
+    } else {
+      return dimensions[this.options.axis === 'x' ? 'width' : 'height']
+    }
   }
 
   getTrackSize(includeLastSlide = true) {
@@ -438,7 +442,9 @@ class Pager {
   getAlignOffset(view: View) {
     const frameSize = this.getFrameSize({ autoSize: false });
     const viewSize = view.getSize();
-    return (frameSize - viewSize) * this.options.align;
+    return typeof frameSize === 'number'
+      ? (frameSize - viewSize) * this.options.align
+      : 0
   }
 
   getPositionValue(trackPosition = this.trackPosition) {

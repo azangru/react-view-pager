@@ -1,6 +1,4 @@
-import React, { Component, Children, createElement } from 'react';
-import PropTypes from 'prop-types';
-import { findDOMNode } from 'react-dom';
+import React, { Component, Children, createElement, createRef } from 'react';
 import { Spring } from 'react-spring';
 
 import { noop } from './utils';
@@ -10,53 +8,92 @@ import ViewPagerContext from './context';
 import Pager from './pager';
 import getIndex from './get-index';
 
-const checkedProps = {
-  tag: PropTypes.any,
-  currentView: PropTypes.any,
-  viewsToShow: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(['auto'])]),
-  viewsToMove: PropTypes.number,
-  align: PropTypes.number,
-  contain: PropTypes.bool,
-  axis: PropTypes.oneOf(['x', 'y']),
-  animations: PropTypes.array,
-  infinite: PropTypes.bool,
-  instant: PropTypes.bool,
-  swipe: PropTypes.oneOf([true, false, 'mouse', 'touch']),
-  swipeThreshold: PropTypes.number,
-  flickTimeout: PropTypes.number,
-  springConfig: PropTypes.objectOf(PropTypes.number),
-  onSwipeStart: PropTypes.func,
-  onSwipeMove: PropTypes.func,
-  onSwipeEnd: PropTypes.func,
-  onScroll: PropTypes.func,
-  onViewChange: PropTypes.func,
-  onRest: PropTypes.func,
-  pager: PropTypes.instanceOf(Pager)
+export type TrackProps = {
+  tag?: string,
+  currentView?: number,
+  viewsToShow?: number,
+  viewsToMove?: number,
+  align?: number,
+  contain?: boolean,
+  axis?: 'x' | 'y',
+  infinite?: boolean,
+  instant?: boolean,
+  swipe?: boolean | 'mouse' | 'touch',
+  swipeThreshold?: number,
+  flickTimeout?: number,
+  onSwipeStart?: Function,
+  onSwipeMove?: Function,
+  onSwipeEnd?: Function,
+  onScroll?: Function,
+  onViewChange?: Function,
+  onRest?: Function,
+  style?: { [key: string]: string | number }
+  children: JSX.Element,
+  className?: string
+  // Currently not used compared to souporserious/react-view-pager
+  // springConfig
+  // animations — currently not used
+}
+
+type TrackWithPagerProps = {
+  tag: string,
+  currentView: number,
+  viewsToShow: number,
+  viewsToMove: number,
+  align: number,
+  contain: boolean,
+  axis: 'x' | 'y',
+  infinite: boolean,
+  instant: boolean,
+  swipe: boolean | 'mouse' | 'touch',
+  swipeThreshold: number,
+  flickTimeout: number,
+  onSwipeStart: Function,
+  onSwipeMove: Function,
+  onSwipeEnd: Function,
+  onScroll: Function,
+  onViewChange: Function,
+  onRest: Function,
+  children: JSX.Element,
+  style?: { [key: string]: string | number }
+  className?: string,
+  pager: Pager
 };
 
-const isNotEqual = (current, next) => (
+type TrackScrollerProps = TrackWithPagerProps & {
+  trackPosition: number
+}
+
+const isNotEqual = (current: TrackWithPagerProps, next: TrackWithPagerProps) => (
   current.viewsToShow !== next.viewsToShow ||
   current.viewsToMove !== next.viewsToMove ||
   current.align !== next.align ||
   current.axis !== next.axis ||
-  current.animations !== next.animations ||
   current.infinite !== next.infinite ||
   current.swipe !== next.swipe ||
   current.swipeThreshold !== next.swipeThreshold ||
   current.flickTimeout !== next.flickTimeout
+  // || current.animations !== next.animations
 );
 
 // Track scroller is an intermediate component that allows us to provide
 // React Spring with a value to onScroll and lets any user of onScroll use setState
-class TrackScroller extends Component {
-  static propTypes = checkedProps
+class TrackScroller extends Component<TrackScrollerProps> {
 
   state = {
     x: 0,
     y: 0
   }
 
-  componentDidUpdate(prevProps) {
+  element = createRef()
+
+  componentDidMount() {
+    if (this.element.current instanceof HTMLElement) {
+      this.props.pager.addTrack(this.element.current);
+    }
+  }
+
+  componentDidUpdate(prevProps: TrackScrollerProps) {
     const { pager, trackPosition } = this.props;
 
     // update onScroll callback, we use requestAnimationFrame to avoid bouncing
@@ -112,7 +149,8 @@ class TrackScroller extends Component {
 
     return createElement(tag, {
       ...restProps,
-      style
+      style,
+      ref: this.element
     }, this.renderViews());
   }
 
@@ -126,8 +164,7 @@ class TrackScroller extends Component {
   }
 }
 
-class Track extends Component {
-  static propTypes = checkedProps
+class Track extends Component<TrackWithPagerProps> {
 
   static defaultProps = {
     tag: 'div',
@@ -142,7 +179,6 @@ class Track extends Component {
     swipe: true,
     swipeThreshold: 0.5,
     flickTimeout: 300,
-    // springConfig: presets.noWobble,
     onSwipeStart: noop,
     onSwipeMove: noop,
     onSwipeEnd: noop,
@@ -158,16 +194,13 @@ class Track extends Component {
   currentTween = 0
   hydrate = false
 
-  constructor(props) {
+  constructor(props: TrackWithPagerProps) {
     super(props);
-    this.props.pager.setOptions(this.props);
+    this.props.pager.setOptions(props);
   }
 
   componentDidMount() {
     const { pager } = this.props;
-
-    // add track to pager
-    pager.addTrack(findDOMNode(this));
 
     // set initial view index and listen for any incoming view index changes
     this.scrollTo(getIndex(this.props.currentView, this.props.children));
@@ -184,7 +217,7 @@ class Track extends Component {
     pager.on('viewChange', this.props.onViewChange);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: TrackWithPagerProps) {
     const { currentView, instant, pager, children } = this.props;
 
     // update instant state from props
@@ -212,11 +245,11 @@ class Track extends Component {
     this.props.pager.next();
   }
 
-  scrollTo(index) {
+  scrollTo(index: number) {
     this.props.pager.setCurrentView({ index });
   }
 
-  setValueInstantly(instant, reset) {
+  setValueInstantly(instant: boolean, reset?: boolean) {
     this.setState({ instant }, () => {
       if (reset) {
         this.setState({ instant: false });
@@ -250,7 +283,7 @@ class Track extends Component {
         { ({ trackPosition }) =>
           createElement(TrackScroller, {
             ...this.props,
-            trackPosition
+            trackPosition,
           })
         }
       </Spring>
@@ -259,25 +292,32 @@ class Track extends Component {
 }
 
 
-export default class TrackWithContext extends Component {
+export default class TrackWithContext extends Component<TrackProps> {
+
+  track: Track | null = null
 
   prev() {
-    this.track.prev();
+    this.track && this.track.prev();
   }
 
   next() {
-    this.track.next();
+    this.track && this.track.next();
   }
 
-  scrollTo(index) {
-    this.track.scrollTo(index);
+  scrollTo(index: number) {
+    this.track && this.track.scrollTo(index);
   }
 
   render() {
     return (
       <ViewPagerContext.Consumer>
         {
-          ({ pager }) => <Track {...this.props} pager={pager} ref={element => this.track = element}/>
+          (context) => context &&
+            <Track
+                {...this.props}
+                pager={context.pager}
+                ref={element => this.track = element}
+            />
         }
       </ViewPagerContext.Consumer>
     );

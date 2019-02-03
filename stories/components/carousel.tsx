@@ -2,7 +2,15 @@ import React, { PureComponent } from 'react';
 
 import { ViewPager, Frame, Track, View } from '../../src/index';
 
-class Carousel extends PureComponent {
+type Props = {
+  viewsToShow: number,
+  infinite: boolean,
+  contain: boolean
+}
+
+class Carousel extends PureComponent<Props> {
+
+  track: Track | null = null
 
   static defaultProps = {
     viewsToShow: 1,
@@ -35,19 +43,22 @@ class Carousel extends PureComponent {
               infinite={infinite}
               viewsToShow={viewsToShow}
             >
-              {
-                React.Children.map(this.props.children, (child, index) => (
-                  <View className="view" key={index}>
-                    { child }
-                  </View>
-                ))
-              }
+              { this.renderViews() }
             </Track>
           </Frame>
         </ViewPager>
         { this.renderControls() }
       </>
     );
+  }
+
+  //  (╯'□')╯︵ ┻━┻
+  renderViews(): any {
+    return React.Children.map(this.props.children, (child, index) => (
+      <View className="view" key={index}>
+        { child as React.ReactElement<any> }
+      </View>
+    ));
   }
 
   renderControls() {
@@ -61,7 +72,7 @@ class Carousel extends PureComponent {
 
   renderPrevButton() {
     return (
-      <button onClick={() => this.track.prev()}>
+      <button onClick={this.showPrev}>
         Previous
       </button>
     );
@@ -69,7 +80,7 @@ class Carousel extends PureComponent {
 
   renderNextButton() {
     return (
-      <button onClick={() => this.track.next()}>
+      <button onClick={this.showNext}>
         Next
       </button>
     );
