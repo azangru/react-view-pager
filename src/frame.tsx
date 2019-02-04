@@ -10,7 +10,7 @@ type FrameProps = {
   tag?: string,
   autoSize?: boolean | 'width' | 'height',
   style?: { [key: string]: unknown },
-  children: JSX.Element,
+  children: React.ReactNode,
   className?: string
   // springConfig
 };
@@ -19,7 +19,7 @@ type FramePropsWithPager = {
   tag: string,
   autoSize: boolean | 'width' | 'height',
   style?: { [key: string]: unknown },
-  children: JSX.Element,
+  children: React.ReactNode,
   className?: string
   pager: Pager
 };

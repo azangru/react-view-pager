@@ -52,8 +52,7 @@ class Carousel extends PureComponent<Props> {
     );
   }
 
-  //  (╯'□')╯︵ ┻━┻
-  renderViews(): any {
+  renderViews() {
     return React.Children.map(this.props.children, (child, index) => (
       <View className="view" key={index}>
         { child as React.ReactElement<any> }

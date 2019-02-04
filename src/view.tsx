@@ -10,7 +10,7 @@ type Props = {
   tag?: string,
   style?: object,
   className?: string,
-  children: JSX.Element
+  children: React.ReactNode
 };
 
 type ViewPropsWithPager = Props & {

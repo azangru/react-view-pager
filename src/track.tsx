@@ -28,7 +28,7 @@ export type TrackProps = {
   onViewChange?: Function,
   onRest?: Function,
   style?: { [key: string]: string | number }
-  children: JSX.Element,
+  children: React.ReactNode,
   className?: string
   // Currently not used compared to souporserious/react-view-pager
   // springConfig
@@ -54,7 +54,7 @@ type TrackWithPagerProps = {
   onScroll: Function,
   onViewChange: Function,
   onRest: Function,
-  children: JSX.Element,
+  children: React.ReactNode,
   style?: { [key: string]: string | number }
   className?: string,
   pager: Pager
