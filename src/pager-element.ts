@@ -1,4 +1,4 @@
-type PagerElementOptions = {
+export type PagerElementOptions = {
   node: HTMLElement,
   pager: object, // Pager instance
   width?: number,

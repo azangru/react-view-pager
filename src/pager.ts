@@ -1,7 +1,7 @@
 import mitt from 'mitt';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import PagerElement from './pager-element';
+import PagerElement, { PagerElementOptions } from './pager-element';
 import { modulo, clamp, sum, max } from './utils';
 
 const isWindowDefined = (typeof window !== 'undefined');
@@ -18,6 +18,10 @@ type PagerOptions = {
   swipe: boolean | 'mouse' | 'touch',
   swipeThreshold: number,
   flickTimeout: number
+};
+
+type ViewOptions = PagerElementOptions & {
+  index: number
 };
 
 class Track extends PagerElement {
@@ -47,7 +51,7 @@ export class View extends PagerElement {
   origin: number
   target: number
 
-  constructor({ index, ...restOptions }) {
+  constructor({ index, ...restOptions }: ViewOptions) {
     super(restOptions);
 
     this.index = index;
@@ -162,7 +166,7 @@ class Pager {
     }
   }
 
-  setOptions(options: PagerOptions) {
+  setOptions(options: Partial<PagerOptions>) {
     const lastOptions = this.options;
 
     // spread new options over the old ones

@@ -1,5 +1,5 @@
 import React, { Component, createElement, createRef } from 'react';
-import { Spring } from 'react-spring';
+import { Spring } from 'react-spring/renderprops';
 
 import ViewPagerContext from './context';
 

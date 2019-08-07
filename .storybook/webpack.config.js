@@ -1,7 +1,7 @@
 const path = require("path");
 
-module.exports = (baseConfig, env, defaultConfig) => {
-  defaultConfig.module.rules.push({
+module.exports = ({ config }) => {
+  config.module.rules.push({
     test: /\.(ts|tsx)$/,
     loader: require.resolve('babel-loader'),
     include: [
@@ -10,7 +10,7 @@ module.exports = (baseConfig, env, defaultConfig) => {
     ]
     // loader: require.resolve("ts-loader")
   });
-  defaultConfig.resolve.extensions.push(".ts", ".tsx");
+  config.resolve.extensions.push(".ts", ".tsx");
 
-  return defaultConfig;
+  return config;
 };

@@ -1,5 +1,5 @@
-import React, { Component, Children, createElement, createRef } from 'react';
-import { Spring } from 'react-spring';
+import React, { Component, Children, createElement, createRef, ReactElement } from 'react';
+import { Spring } from 'react-spring/renderprops';
 
 import { noop } from './utils';
 
@@ -159,7 +159,7 @@ class TrackScroller extends Component<TrackScrollerProps> {
     // contain empty slides
     return Children.map(
       this.props.children,
-      child => React.cloneElement(child)
+      child => React.cloneElement(child as ReactElement)
     );
   }
 }
