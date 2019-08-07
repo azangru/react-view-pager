@@ -1,1 +1,0 @@
-{"version":3,"file":"main.99de312af3ee8ad1a4c8.bundle.js","sources":["webpack:///./src/context.js"],"sourcesContent":["import React from 'react';\n\nconst ViewPagerContext = React.createContext();\n\nexport default ViewPagerContext;\n"],"mappings":"AAIA","sourceRoot":""}
