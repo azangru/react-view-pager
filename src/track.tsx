@@ -1,4 +1,17 @@
-import React, { Component, Children, createElement, createRef, ReactElement } from 'react';
+import React, {
+  Component,
+  Children,
+  createElement,
+  createRef,
+  ReactElement,
+  useState,
+  useEffect,
+  useContext,
+  useImperativeHandle,
+  forwardRef,
+  RefForwardingComponent
+} from 'react';
+// import { useSpring } from 'react-spring';
 import { Spring } from 'react-spring/renderprops';
 
 import { noop } from './utils';
@@ -63,18 +76,6 @@ type TrackWithPagerProps = {
 type TrackScrollerProps = TrackWithPagerProps & {
   trackPosition: number
 }
-
-const isNotEqual = (current: TrackWithPagerProps, next: TrackWithPagerProps) => (
-  current.viewsToShow !== next.viewsToShow ||
-  current.viewsToMove !== next.viewsToMove ||
-  current.align !== next.align ||
-  current.axis !== next.axis ||
-  current.infinite !== next.infinite ||
-  current.swipe !== next.swipe ||
-  current.swipeThreshold !== next.swipeThreshold ||
-  current.flickTimeout !== next.flickTimeout
-  // || current.animations !== next.animations
-);
 
 // Track scroller is an intermediate component that allows us to provide
 // React Spring with a value to onScroll and lets any user of onScroll use setState
@@ -164,163 +165,142 @@ class TrackScroller extends Component<TrackScrollerProps> {
   }
 }
 
-class Track extends Component<TrackWithPagerProps> {
+type TrackHandles = {
+  prev: () => void;
+  next: () => void;
+  scrollTo: (slideIndex: number) => void
+};
 
-  static defaultProps = {
-    tag: 'div',
-    currentView: 0,
-    viewsToShow: 1,
-    viewsToMove: 1,
-    align: 0,
-    contain: false,
-    axis: 'x',
-    infinite: false,
-    instant: false,
-    swipe: true,
-    swipeThreshold: 0.5,
-    flickTimeout: 300,
-    onSwipeStart: noop,
-    onSwipeMove: noop,
-    onSwipeEnd: noop,
-    onScroll: noop,
-    onViewChange: noop,
-    onRest: noop
-  }
 
-  state = {
-    instant: false
-  }
+const optionalTrackProps = {
+  tag: 'div',
+  currentView: 0,
+  viewsToShow: 1,
+  viewsToMove: 1,
+  align: 0,
+  contain: false,
+  axis: 'x',
+  infinite: false,
+  instant: false,
+  swipe: true,
+  swipeThreshold: 0.5,
+  flickTimeout: 300,
+  onSwipeStart: noop,
+  onSwipeMove: noop,
+  onSwipeEnd: noop,
+  onScroll: noop,
+  onViewChange: noop,
+  onRest: noop
+};
 
-  currentTween = 0
-  hydrate = false
+const Track: RefForwardingComponent<TrackHandles, TrackWithPagerProps> = (
+  props: TrackWithPagerProps,
+  ref
+) => {
+  const context = useContext(ViewPagerContext);
+  if (!context) return null;
+  props = { ...optionalTrackProps, ...props };
+  const pager = context.pager;
+  const [isInstant, setIsInstant] = useState(false);
 
-  constructor(props: TrackWithPagerProps) {
-    super(props);
-    this.props.pager.setOptions(props);
-  }
+  useEffect(() => {
+    pager.setOptions(props);
+  }, []);
 
-  componentDidMount() {
-    const { pager } = this.props;
-
+  useEffect(() => {
     // set initial view index and listen for any incoming view index changes
-    this.scrollTo(getIndex(this.props.currentView, this.props.children));
+    scrollTo(getIndex(props.currentView, props.children));
 
     // set values instantly on respective events
-    pager.on('hydrated', () => this.setValueInstantly(true, true));
-    pager.on('swipeMove', () => this.setValueInstantly(true));
-    pager.on('swipeEnd', () => this.setValueInstantly(false));
+    pager.on('hydrated', () => setValueInstantly(true, true));
+    pager.on('swipeMove', () => setValueInstantly(true));
+    pager.on('swipeEnd', () => setValueInstantly(false));
 
     // prop callbacks
-    pager.on('swipeStart', this.props.onSwipeStart);
-    pager.on('swipeMove', this.props.onSwipeMove);
-    pager.on('swipeEnd', this.props.onSwipeEnd);
-    pager.on('viewChange', this.props.onViewChange);
-  }
+    pager.on('swipeStart', props.onSwipeStart);
+    pager.on('swipeMove', props.onSwipeMove);
+    pager.on('swipeEnd', props.onSwipeEnd);
+    pager.on('viewChange', props.onViewChange);
+  }, []);
 
-  componentDidUpdate(prevProps: TrackWithPagerProps) {
-    const { currentView, instant, pager, children } = this.props;
+  useEffect(() => {
+    setValueInstantly(props.instant)
+  }, [props.instant]);
 
-    // update instant state from props
-    if (instant !== prevProps.instant) {
-      this.setValueInstantly(instant);
-    }
+  useEffect(() => {
+    scrollTo(getIndex(props.currentView, props.children));
+  }, [props.currentView]);
 
-    // update state with new index if necessary
-    if (currentView !== prevProps.currentView) {
-      this.scrollTo(getIndex(currentView, children));
-    }
+  useEffect(() => {
+    pager.setOptions(props);
+    pager.hydrate();
+  }, [
+    props.viewsToShow,
+    props.viewsToMove,
+    props.align,
+    props.axis,
+    props.infinite,
+    props.swipe,
+    props.swipeThreshold,
+    props.flickTimeout
+  ]);
 
-    // update any options that have changed
-    if (isNotEqual(this.props, prevProps)) {
-      pager.setOptions(this.props);
-      pager.hydrate();
-    }
-  }
+  useImperativeHandle(ref, () => ({
+    prev: () => {
+      pager.prev();
+    },
+    next() {
+      pager.next();
+    },
+    scrollTo
+  }));
 
-  prev() {
-    this.props.pager.prev();
-  }
+  const scrollTo = (index: number) => {
+    pager.setCurrentView({ index });
+  };
 
-  next() {
-    this.props.pager.next();
-  }
+  const setValueInstantly = (instant: boolean, reset?: boolean) => {
+    instant = reset ? false : instant;
+    setIsInstant(instant);
+  };
 
-  scrollTo(index: number) {
-    this.props.pager.setCurrentView({ index });
-  }
-
-  setValueInstantly(instant: boolean, reset?: boolean) {
-    this.setState({ instant }, () => {
-      if (reset) {
-        this.setState({ instant: false });
-      }
-    });
-  }
-
-  getTrackStyle() {
-    return { trackPosition: this.props.pager.trackPosition };
-  }
-
-  handleOnRest = () => {
-    if (this.props.infinite && !this.state.instant) {
+  const handleOnRest = () => {
+    if (props.infinite && !isInstant) {
       // reset back to a normal index
-      this.props.pager.resetViewIndex();
+      pager.resetViewIndex();
 
       // set instant flag so we can prime track for next move
-      this.setValueInstantly(true, true);
+      setValueInstantly(true, true);
     }
 
-    this.props.onRest();
-  }
+    props.onRest();
+  };
 
-  render() {
-    return (
-      <Spring
-        to={this.getTrackStyle()}
-        onRest={this.handleOnRest}
-        immediate={this.state.instant}
-      >
-        { ({ trackPosition }) =>
-          createElement(TrackScroller, {
-            ...this.props,
-            trackPosition,
-          })
-        }
-      </Spring>
-    );
-  }
-}
+  console.log('pager.trackPosition', pager.trackPosition);
+
+  return (
+    <Spring
+      to={{trackPosition: pager.trackPosition}}
+      onRest={handleOnRest}
+      immediate={isInstant}
+    >
+      { ({ trackPosition }) =>
+        createElement(TrackScroller, {
+          ...props,
+          trackPosition,
+          pager
+        })
+      }
+    </Spring>
+  );
 
 
-export default class TrackWithContext extends Component<TrackProps> {
-
-  track: Track | null = null
-
-  prev() {
-    this.track && this.track.prev();
-  }
-
-  next() {
-    this.track && this.track.next();
-  }
-
-  scrollTo(index: number) {
-    this.track && this.track.scrollTo(index);
-  }
-
-  render() {
-    return (
-      <ViewPagerContext.Consumer>
-        {
-          (context) => context &&
-            <Track
-                {...this.props}
-                pager={context.pager}
-                ref={element => this.track = element}
-            />
-        }
-      </ViewPagerContext.Consumer>
-    );
-  }
+  // return createElement(TrackScroller, {
+  //   ...props,
+  //   pager,
+  //   trackPosition: spring.trackPosition.value
+  // });
 
 }
+
+export default forwardRef(Track);
